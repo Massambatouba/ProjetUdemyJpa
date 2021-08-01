@@ -4,6 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.Test;
@@ -17,7 +23,8 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.hibernate4all.tutorial.config.PersistenceConfigTest;
+import com.hibernate4all.tutorial.config.PersistenceConfig;
+import com.hibernate4all.tutorial.domain.Award;
 import com.hibernate4all.tutorial.domain.Certification;
 import com.hibernate4all.tutorial.domain.Genre;
 import com.hibernate4all.tutorial.domain.Movie;
@@ -25,8 +32,8 @@ import com.hibernate4all.tutorial.domain.MovieDetails;
 import com.hibernate4all.tutorial.domain.Review;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { PersistenceConfigTest.class })
-@SqlConfig(dataSource = "dataSourceH2", transactionManager = "transactionManager")
+@ContextConfiguration(classes = { PersistenceConfig.class })
+@SqlConfig(dataSource = "dataSource", transactionManager = "transactionManager")
 @Sql({ "/datas/datas-test.sql" })
 public class MovieRepositoryTest {
 
@@ -34,7 +41,26 @@ public class MovieRepositoryTest {
 
 	@Autowired
 	private MovieRepository repository;
+	
+	@Test
+	public void Review_ratingValidation() {
+		Review review1 = new Review().setAuthor("max").setContent("super film !").setRating(12);
+		ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+		Validator validator = validatorFactory.getValidator();
+		Set<ConstraintViolation<Review>> errors = validator.validate(review1);
+		assertThat(errors).as("le rating aurait du provoquer une erreur").hasSize(1);
+	}
 
+	@Test
+	public void createMovie_withAward() {
+		Award award = new Award().setName("Best Motion Picture of the Year").setYear(2011);
+		Movie movie = new Movie().setName("Inception")
+				.setCertification(Certification.INTERDIT_MOINS_12)
+				.addAward(award);
+		repository.persist(movie);
+		assertThat(award.getId()).as("Award aurait du être persisté avec Movie").isNotNull();
+	}
+	
 	@Test
 	public void save_casNominal() {
 		Movie movie = new Movie().setName("Inception")

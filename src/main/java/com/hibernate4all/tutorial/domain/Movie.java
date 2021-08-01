@@ -33,7 +33,10 @@ public class Movie {
 	private Certification certification;
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "movie")
-	private List<Review> reviews = new ArrayList<Review>();
+	private List<Review> reviews = new ArrayList<>();
+
+	@OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Award> awards = new ArrayList<>();
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "movie_genre", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "genre_id"))
@@ -121,6 +124,26 @@ public class Movie {
 	@Override
 	public int hashCode() {
 		return Objects.hash(31);
+	}
+
+	public List<Award> getAwards() {
+		return Collections.unmodifiableList(awards);
+	}
+
+	public Movie addAward(Award award) {
+		if (award != null) {
+			this.awards.add(award);
+			award.setMovie(this);
+		}
+		return this;
+	}
+
+	public Movie removeAward(Award award) {
+		if (award != null) {
+			this.awards.remove(award);
+			award.setMovie(null);
+		}
+		return this;
 	}
 
 	@Override

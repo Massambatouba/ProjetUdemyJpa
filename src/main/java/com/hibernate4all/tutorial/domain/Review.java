@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 @Entity
 public class Review {
@@ -19,6 +21,10 @@ public class Review {
 	private String author;
 
 	private String content;
+
+	@Min(value = 0)
+	@Max(value = 10)
+	private Integer rating;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "movie_id")
@@ -58,6 +64,15 @@ public class Review {
 		return this;
 	}
 
+	public Integer getRating() {
+		return rating;
+	}
+
+	public Review setRating(Integer rating) {
+		this.rating = rating;
+		return this;
+	}
+
 	@Override
 	public int hashCode() {
 		return 32;
@@ -68,12 +83,13 @@ public class Review {
 		if (this == obj) {
 			return true;
 		}
-		if ((!(obj instanceof Review))) {
+		if ((!(obj instanceof Movie))) {
 			return false;
 		}
 		Review other = (Review) obj;
 		if (id == null && other.getId() == null) {
-			return Objects.equals(author, other.getAuthor()) && Objects.equals(content, other.getContent());
+			return Objects.equals(author, other.getAuthor()) && Objects.equals(content, other.getContent())
+					&& Objects.equals(rating, other.getRating());
 		}
 		return id != null && Objects.equals(id, other.getId());
 	}
