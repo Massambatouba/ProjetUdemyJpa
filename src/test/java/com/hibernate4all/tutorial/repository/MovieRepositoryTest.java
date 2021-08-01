@@ -186,4 +186,9 @@ public class MovieRepositoryTest {
 		assertThat(result.get(0).getName()).as("mauvais film récupéré").isEqualTo("Inception");
 	}
 
+	@Test
+	public void findWithCertificatqueryion_casNominal() {
+		List<Movie> result = repository.findWithCertification("<=", Certification.INTERDIT_MOINS_12);
+		assertThat(result).as("il devrait y avoir 2 films correspondants au critère de recherche").hasSize(2);
+	}
 }
