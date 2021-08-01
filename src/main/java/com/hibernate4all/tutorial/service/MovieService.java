@@ -1,9 +1,9 @@
 package com.hibernate4all.tutorial.service;
 
-import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hibernate4all.tutorial.domain.Movie;
 import com.hibernate4all.tutorial.repository.MovieRepository;
