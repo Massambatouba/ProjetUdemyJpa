@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hibernate4all.tutorial.domain.Movie;
 import com.hibernate4all.tutorial.domain.MovieDetails;
 import com.hibernate4all.tutorial.dto.MovieDTO;
+import com.hibernate4all.tutorial.repository.MovieDetailsRepository;
 import com.hibernate4all.tutorial.repository.MovieRepository;
 
 @RestController
@@ -29,6 +30,9 @@ public class MovieController {
 
 	@Autowired
 	private MovieRepository repository;
+	
+	@Autowired
+	private MovieDetailsRepository movieDetailsRepository;
 
 	@PostMapping("/")
 	public Movie create(@RequestBody Movie movie) {
@@ -69,7 +73,7 @@ public class MovieController {
 	public ResponseEntity<MovieDetails> get(@PathVariable("id") Long id) {
 		ResponseEntity<MovieDetails> result;
 		try {
-			MovieDetails movieDetails = repository.getMovieDetails(id);
+			MovieDetails movieDetails = movieDetailsRepository.getMovieDetails(id);
 			if (movieDetails == null) {
 				result = ResponseEntity.notFound().build();
 			} else {

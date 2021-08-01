@@ -29,38 +29,10 @@ public class MovieRepository {
 		entityManager.persist(movie);
 	}
 
-	@Transactional
-	public void addMovieDetails(MovieDetails movieDetails, Long idMovie) {
-		Movie movieRef = getReference(idMovie);
-		movieDetails.setMovie(movieRef);
-		entityManager.persist(movieDetails);
-	}
-
 	public Movie find(Long id) {
 		return entityManager.find(Movie.class, id);
 	}
 
-	@Transactional
-	public MovieDetails getMovieDetails(Long id) {
-		MovieDetails result = entityManager
-				.createQuery("select distinct md from MovieDetails md " + "join fetch md.movie m "
-						+ "left join fetch m.reviews "
-						+ "left join fetch m.genres "
-						+ " where md.id = :id", MovieDetails.class)
-				.setParameter("id", id)
-				.setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
-				.getSingleResult();
-
-		entityManager
-				.createQuery("select distinct m from Movie m left join fetch m.awards where m in (:movies)",
-						Movie.class)
-				.setParameter("movies", result.getMovie())
-				.setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
-				.getResultList();
-
-		return result;
-	}
-	
 	public List<Movie> getAll() {
 		return entityManager.createQuery("from Movie", Movie.class).getResultList();
 	}
@@ -154,10 +126,4 @@ public class MovieRepository {
 				.getResultList();
 	}
 	
-
-	public List<MovieDetails> getAllMovieDetails() {
-		return entityManager
-				.createQuery("select md from MovieDetails md join fetch md.movie", MovieDetails.class)
-				.getResultList();
-	}
 }

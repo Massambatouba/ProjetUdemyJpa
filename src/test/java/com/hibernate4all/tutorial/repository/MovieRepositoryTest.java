@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.EntityManagerFactory;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -19,13 +20,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.hibernate4all.tutorial.config.PersistenceConfig;
 import com.hibernate4all.tutorial.domain.Award;
 import com.hibernate4all.tutorial.domain.Certification;
 import com.hibernate4all.tutorial.domain.Genre;
@@ -34,13 +33,12 @@ import com.hibernate4all.tutorial.domain.MovieDetails;
 import com.hibernate4all.tutorial.domain.Review;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { PersistenceConfig.class })
-@SqlConfig(dataSource = "dataSource", transactionManager = "transactionManager")
+@SpringBootTest
 @Sql({ "/datas/datas-test.sql" })
 public class MovieRepositoryTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MovieRepositoryTest.class);
-
+	
 	@Autowired
 	private MovieRepository repository;
 	
@@ -70,13 +68,6 @@ public class MovieRepositoryTest {
 				.setCertification(Certification.INTERDIT_MOINS_12);
 		repository.persist(movie);
 		assertThat(movie.getId()).as("le movie aurait du être persisté").isNotNull();
-	}
-	
-	@Test
-	public void addMovieDetails_casNominal() {
-		MovieDetails details = new MovieDetails().setPlot("Intrigue du film Memento trés longue !");
-		repository.addMovieDetails(details, -2L);
-		assertThat(details.getId()).as("l'entité MovieDetails aurait du être persistée").isNotNull();
 	}
 
 	@Test
@@ -203,13 +194,6 @@ public class MovieRepositoryTest {
 		assertThat(inception.getAwards()).as("les awards n'ont pas été correctement récupérées").hasSize(4);
 	}
 
-	@Test
-	@Sql({ "/datas/datas-test-n+1.sql" })
-	public void getAllMovieDetails_casNominal() {
-		List<MovieDetails> movieDetails = repository.getAllMovieDetails();
-		assertThat(movieDetails).as("la liste des movie details n'a pas été correctement récupérée").hasSize(3);
-	}
-	
 	@Test
 	@Sql({ "/datas/datas-test-bulk.sql" })
 	public void getAllMovieBulk_casNominal() {
