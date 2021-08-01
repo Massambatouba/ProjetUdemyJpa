@@ -116,4 +116,11 @@ public class MovieRepository {
 				.setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
 				.getResultList();
 	}
+	
+
+	public List<MovieDetails> getAllMovieDetails() {
+		return entityManager
+				.createQuery("select md from MovieDetails md join fetch md.movie", MovieDetails.class)
+				.getResultList();
+	}
 }

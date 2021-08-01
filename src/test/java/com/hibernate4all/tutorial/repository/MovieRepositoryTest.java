@@ -200,4 +200,11 @@ public class MovieRepositoryTest {
 		assertThat(inception.getReviews()).as("les reviews n'ont pas été correctement récupérées").hasSize(2);
 		assertThat(inception.getAwards()).as("les awards n'ont pas été correctement récupérées").hasSize(4);
 	}
+
+	@Test
+	@Sql({ "/datas/datas-test-n+1.sql" })
+	public void getAllMovieDetails_casNominal() {
+		List<MovieDetails> movieDetails = repository.getAllMovieDetails();
+		assertThat(movieDetails).as("la liste des movie details n'a pas été correctement récupérée").hasSize(3);
+	}
 }
