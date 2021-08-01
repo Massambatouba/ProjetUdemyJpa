@@ -2,8 +2,10 @@ package com.hibernate4all.tutorial.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -11,6 +13,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 @Entity
@@ -29,6 +34,30 @@ public class Movie {
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "movie")
 	private List<Review> reviews = new ArrayList<Review>();
+
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "movie_genre", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "genre_id"))
+	private Set<Genre> genres = new HashSet<>();
+
+	public Movie addGenre(Genre genre) {
+		if (genre != null) {
+			this.genres.add(genre);
+			genre.getMovies().add(this);
+		}
+		return this;
+	}
+
+	public Movie removieGenre(Genre genre) {
+		if (genre != null) {
+			this.genres.remove(genre);
+			genre.getMovies().remove(this);
+		}
+		return this;
+	}
+
+	public Set<Genre> getGenres() {
+		return Collections.unmodifiableSet(genres);
+	}
 
 	public Movie addReview(Review review) {
 		if (review != null) {

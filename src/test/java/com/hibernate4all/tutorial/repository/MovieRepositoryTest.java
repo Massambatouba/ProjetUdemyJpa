@@ -19,6 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.hibernate4all.tutorial.config.PersistenceConfigTest;
 import com.hibernate4all.tutorial.domain.Certification;
+import com.hibernate4all.tutorial.domain.Genre;
 import com.hibernate4all.tutorial.domain.Movie;
 import com.hibernate4all.tutorial.domain.Review;
 
@@ -40,6 +41,31 @@ public class MovieRepositoryTest {
 				.setCertification(Certification.INTERDIT_MOINS_12);
 		repository.persist(movie);
 		assertThat(movie.getId()).as("le movie aurait du être persisté").isNotNull();
+	}
+
+	@Test
+	public void save_withGenres() {
+		Movie movie = new Movie();
+		movie.setName("The Social Network");
+		Genre bio = new Genre("Biography");
+		Genre drama = new Genre("Drama");
+		movie.addGenre(bio).addGenre(drama);
+		repository.persist(movie);
+		assertThat(bio.getId()).as("l'entité aurait du être persistée avec le Movie").isNotNull();
+	}
+
+	@Test
+	public void merge_withExistingGenre() {
+		Movie movie = new Movie();
+		movie.setName("The Social Network");
+		Genre bio = new Genre("Biography");
+		Genre drama = new Genre("Drama");
+		Genre action = new Genre("Action");
+		action.setId(-1L);
+		movie.addGenre(bio).addGenre(drama).addGenre(action);
+		Movie m =repository.merge(movie);
+		assertThat(m.getGenres()).as("l'entité persistée devrait avoir 3 genres").hasSize(3);
+		assertThat(m.getGenres()).as("tous les genres associés à l'entité devrait avoir un id").allMatch(g -> g.getId() != null);
 	}
 
 	@Test
