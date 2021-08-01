@@ -10,6 +10,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
+import org.hibernate.jpa.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import com.hibernate4all.tutorial.domain.Certification;
@@ -99,5 +100,14 @@ public class MovieRepository {
 		query.where(predicat);
 
 		return entityManager.createQuery(query).getResultList();
+	}
+	
+
+	@Transactional
+	public List<Movie> getMoviesWithReviews() {
+		return entityManager
+				.createQuery("select distinct m from Movie m left join fetch m.reviews", Movie.class)
+				.setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
+				.getResultList();
 	}
 }

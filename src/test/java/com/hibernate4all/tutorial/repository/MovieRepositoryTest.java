@@ -191,4 +191,12 @@ public class MovieRepositoryTest {
 		List<Movie> result = repository.findWithCertification("<=", Certification.INTERDIT_MOINS_12);
 		assertThat(result).as("il devrait y avoir 2 films correspondants au critère de recherche").hasSize(2);
 	}
+	
+	@Test
+	public void getMoviesWithAwardsAndReviews_casNominal() {
+		List<Movie> m = repository.getMoviesWithReviews();
+		assertThat(m).as("il devrait y avoir 2 films récupérés").hasSize(2);
+		Movie inception = m.stream().filter(movie -> movie.getId().equals(-1L)).findFirst().get();
+		assertThat(inception.getReviews()).as("les reviews n'ont pas été correctement récupérées").hasSize(2);
+	}
 }
