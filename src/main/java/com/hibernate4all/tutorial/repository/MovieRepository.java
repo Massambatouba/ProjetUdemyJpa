@@ -29,4 +29,18 @@ public class MovieRepository {
 		return entityManager.createQuery("from Movie", Movie.class).getResultList();
 	}
 
+	@Transactional
+	public Movie merge(Movie movie) {
+		return entityManager.merge(movie);
+	}
+
+	@Transactional
+	public void remove(Long l) {
+		Movie movie = entityManager.find(Movie.class, l);
+		entityManager.remove(movie);
+	}
+
+	public Movie getReference(Long l) {
+		return entityManager.getReference(Movie.class, l);
+	}
 }
