@@ -34,9 +34,9 @@ public class MovieRepositoryTest {
 
 	@Test
 	public void save_casNominal() {
-		Movie movie = new Movie();
-		movie.setName("Inception");
-		movie.setCertification(Certification.INTERDIT_MOINS_12);
+		Movie movie = new Movie().setName("Inception")
+				.setDescription("test")
+				.setCertification(Certification.INTERDIT_MOINS_12);
 		repository.persist(movie);
 		assertThat(movie.getId()).as("le movie aurait du être persisté").isNotNull();
 	}

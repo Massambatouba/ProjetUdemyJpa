@@ -8,9 +8,7 @@ import javax.persistence.Converter;
 import com.hibernate4all.tutorial.domain.Certification;
 
 @Converter(autoApply = true)
-public class CertificationAttributeConverter
-		implements
-			AttributeConverter<Certification, Integer> {
+public class CertificationAttributeConverter implements AttributeConverter<Certification, Integer> {
 
 	@Override
 	public Integer convertToDatabaseColumn(Certification attribute) {
@@ -20,7 +18,8 @@ public class CertificationAttributeConverter
 	@Override
 	public Certification convertToEntityAttribute(Integer dbData) {
 		return Stream.of(Certification.values())
-				.filter(certif -> certif.getKey().equals(dbData)).findFirst()
+				.filter(certif -> certif.getKey().equals(dbData))
+				.findFirst()
 				.orElse(null);
 	}
 

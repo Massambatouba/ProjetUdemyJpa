@@ -26,8 +26,9 @@ public class Movie {
 		return certification;
 	}
 
-	public void setCertification(Certification certification) {
+	public Movie setCertification(Certification certification) {
 		this.certification = certification;
+		return this;
 	}
 
 	public Long getId() {
@@ -42,16 +43,18 @@ public class Movie {
 		return name;
 	}
 
-	public void setName(String name) {
+	public Movie setName(String name) {
 		this.name = name;
+		return this;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public Movie setDescription(String description) {
 		this.description = description;
+		return this;
 	}
 
 	@Override
@@ -69,8 +72,7 @@ public class Movie {
 		}
 		Movie other = (Movie) obj;
 		if (id == null && other.getId() == null) {
-			return Objects.equals(name, other.getName())
-					&& Objects.equals(description, other.getDescription())
+			return Objects.equals(name, other.getName()) && Objects.equals(description, other.getDescription())
 					&& Objects.equals(certification, other.getCertification());
 		}
 		return id != null && Objects.equals(id, other.getId());
@@ -78,8 +80,8 @@ public class Movie {
 
 	@Override
 	public String toString() {
-		return "Movie [id=" + id + ", name=" + name + ", description="
-				+ description + ", certification=" + certification + "]";
+		return "Movie [id=" + id + ", name=" + name + ", description=" + description + ", certification="
+				+ certification + "]";
 	}
 
 }
