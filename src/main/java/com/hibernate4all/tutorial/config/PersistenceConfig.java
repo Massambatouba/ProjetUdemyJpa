@@ -24,7 +24,8 @@ public class PersistenceConfig {
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 		em.setDataSource(dataSource());
-		em.setPackagesToScan(new String[] { "com.hibernate4all.tutorial.domain" });
+		em.setPackagesToScan(
+				new String[] { "com.hibernate4all.tutorial.domain", "com.hibernate4all.tutorial.converter" });
 
 		JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		em.setJpaVendorAdapter(vendorAdapter);

@@ -18,6 +18,7 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.hibernate4all.tutorial.config.PersistenceConfigTest;
+import com.hibernate4all.tutorial.domain.Certification;
 import com.hibernate4all.tutorial.domain.Movie;
 
 @ExtendWith(SpringExtension.class)
@@ -35,6 +36,7 @@ public class MovieRepositoryTest {
 	public void save_casNominal() {
 		Movie movie = new Movie();
 		movie.setName("Inception");
+		movie.setCertification(Certification.INTERDIT_MOINS_12);
 		repository.persist(movie);
 		assertThat(movie.getId()).as("le movie aurait du être persisté").isNotNull();
 	}
@@ -62,6 +64,8 @@ public class MovieRepositoryTest {
 	public void find_casNominal() {
 		Movie memento = repository.find(-2L);
 		assertThat(memento.getName()).as("mauvais film récupéré").isEqualTo("Memento");
+		assertThat(memento.getCertification()).as("le converter n'a pas fonctionné")
+				.isEqualTo(Certification.INTERDIT_MOINS_12);
 	}
 
 	@Test
