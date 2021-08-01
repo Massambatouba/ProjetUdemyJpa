@@ -1,11 +1,15 @@
 package com.hibernate4all.tutorial.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
+import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -20,6 +24,8 @@ import com.hibernate4all.tutorial.domain.Movie;
 @SqlConfig(dataSource = "dataSourceH2", transactionManager = "transactionManager")
 @Sql({ "/datas/datas-test.sql" })
 public class MovieRepositoryTest {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MovieRepositoryTest.class);
 
 	@Autowired
 	private MovieRepository repository;
@@ -65,5 +71,14 @@ public class MovieRepositoryTest {
 	public void getReference_casNominal() {
 		Movie movie = repository.getReference(-2L);
 		assertThat(movie.getId()).as("la référence n'a pas été correctement chargée").isEqualTo(-2L);
+	}
+	
+	@Test
+	public void getReference_fail() {
+		assertThrows(LazyInitializationException.class, () -> {
+			Movie movie = repository.getReference(-2L);
+			LOGGER.trace("movie name : " + movie.getName());
+			assertThat(movie.getId()).as("la référence n'a pas été correctement chargée").isEqualTo(-2L);
+		});
 	}
 }
