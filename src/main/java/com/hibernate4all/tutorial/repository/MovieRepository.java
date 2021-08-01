@@ -21,7 +21,6 @@ public class MovieRepository {
 		entityManager.persist(movie);
 	}
 
-
 	public List<Movie> getAll() {
 		throw new UnsupportedOperationException();
 	}
