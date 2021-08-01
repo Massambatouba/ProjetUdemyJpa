@@ -194,9 +194,10 @@ public class MovieRepositoryTest {
 	
 	@Test
 	public void getMoviesWithAwardsAndReviews_casNominal() {
-		List<Movie> m = repository.getMoviesWithReviews();
+		List<Movie> m = repository.getMoviesWithAwardsAndReviews();
 		assertThat(m).as("il devrait y avoir 2 films récupérés").hasSize(2);
 		Movie inception = m.stream().filter(movie -> movie.getId().equals(-1L)).findFirst().get();
 		assertThat(inception.getReviews()).as("les reviews n'ont pas été correctement récupérées").hasSize(2);
+		assertThat(inception.getAwards()).as("les awards n'ont pas été correctement récupérées").hasSize(4);
 	}
 }

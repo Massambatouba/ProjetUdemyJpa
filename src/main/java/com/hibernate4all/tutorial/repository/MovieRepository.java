@@ -104,9 +104,15 @@ public class MovieRepository {
 	
 
 	@Transactional
-	public List<Movie> getMoviesWithReviews() {
-		return entityManager
+	public List<Movie> getMoviesWithAwardsAndReviews() {
+		List<Movie> movies = entityManager
 				.createQuery("select distinct m from Movie m left join fetch m.reviews", Movie.class)
+				.setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
+				.getResultList();
+		return entityManager
+				.createQuery("select distinct m from Movie m left join fetch m.awards where m in (:movies)",
+						Movie.class)
+				.setParameter("movies", movies)
 				.setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
 				.getResultList();
 	}
