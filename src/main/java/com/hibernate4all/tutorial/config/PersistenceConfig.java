@@ -5,11 +5,11 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan(basePackages = { "com.hibernate4all.tutorial" })
 @PropertySource("classpath:application.properties")
 public class PersistenceConfig {
-	
+
 	@Value("${database.url}")
 	private String databaseUrl;
 
@@ -42,13 +42,13 @@ public class PersistenceConfig {
 
 	@Bean
 	public DataSource dataSource() {
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName("org.postgresql.Driver");
-		dataSource.setUrl(databaseUrl);
-		dataSource.setUsername("postgres");
-		dataSource.setPassword("admin");
+		DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create()
+				.driverClassName("org.postgresql.Driver")
+				.url(databaseUrl)
+				.username("postgres")
+				.password("admin");
 
-		return dataSource;
+		return dataSourceBuilder.build();
 	}
 
 	@Bean
