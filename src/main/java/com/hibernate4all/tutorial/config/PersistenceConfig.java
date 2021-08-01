@@ -18,12 +18,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(basePackages = { "com.hibernate4all.tutorial" })
-public class PersitenceConfig {
+public class PersistenceConfig {
 
 	@Bean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-		em.setDataSource(dataSourceH2());
+		em.setDataSource(dataSource());
 		em.setPackagesToScan(new String[] { "com.hibernate4all.tutorial.domain" });
 
 		JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
@@ -34,12 +34,12 @@ public class PersitenceConfig {
 	}
 
 	@Bean
-	public DataSource dataSourceH2() {
+	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName("org.h2.Driver");
-		dataSource.setUrl("jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
-		dataSource.setUsername("sa");
-		dataSource.setPassword("");
+		dataSource.setDriverClassName("org.postgresql.Driver");
+		dataSource.setUrl("jdbc:postgresql://localhost:5432/hibernate4all");
+		dataSource.setUsername("postgres");
+		dataSource.setPassword("admin");
 
 		return dataSource;
 	}
@@ -54,8 +54,8 @@ public class PersitenceConfig {
 
 	private Properties additionalProperties() {
 		Properties properties = new Properties();
-		properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
-		properties.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+		properties.setProperty("hibernate.hbm2ddl.auto", "none");
+		properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
 		return properties;
 	}
 }

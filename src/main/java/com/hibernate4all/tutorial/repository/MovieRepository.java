@@ -35,9 +35,22 @@ public class MovieRepository {
 	}
 
 	@Transactional
-	public void remove(Long l) {
-		Movie movie = entityManager.find(Movie.class, l);
-		entityManager.remove(movie);
+	public Movie update(Movie movie) {
+		entityManager.getReference(Movie.class, movie.getId());
+		return entityManager.merge(movie);
+	}
+
+	@Transactional
+	public boolean remove(Long l) {
+		boolean result = false;
+		if (l != null) {
+			Movie movie = entityManager.find(Movie.class, l);
+			if (movie != null) {
+				entityManager.remove(movie);
+				result = true;
+			}
+		}
+		return result;
 	}
 
 	public Movie getReference(Long l) {

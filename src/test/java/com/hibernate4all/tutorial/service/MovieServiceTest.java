@@ -8,10 +8,10 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.hibernate4all.tutorial.config.PersitenceConfig;
+import com.hibernate4all.tutorial.config.PersistenceConfigTest;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { PersitenceConfig.class })
+@ContextConfiguration(classes = { PersistenceConfigTest.class })
 @SqlConfig(dataSource = "dataSourceH2", transactionManager = "transactionManager")
 @Sql({ "/datas/datas-test.sql" })
 public class MovieServiceTest {

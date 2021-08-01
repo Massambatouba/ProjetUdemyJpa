@@ -11,16 +11,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.hibernate4all.tutorial.config.PersitenceConfig;
+import com.hibernate4all.tutorial.config.PersistenceConfigTest;
 import com.hibernate4all.tutorial.domain.Movie;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { PersitenceConfig.class })
+@ContextConfiguration(classes = { PersistenceConfigTest.class })
 @SqlConfig(dataSource = "dataSourceH2", transactionManager = "transactionManager")
 @Sql({ "/datas/datas-test.sql" })
 public class MovieRepositoryTest {
@@ -36,6 +37,16 @@ public class MovieRepositoryTest {
 		movie.setName("Inception");
 		repository.persist(movie);
 		assertThat(movie.getId()).as("le movie aurait du être persisté").isNotNull();
+	}
+
+	@Test
+	public void update_casNotFound() {
+		assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+			Movie movie = new Movie();
+			movie.setId(-10L);
+			movie.setName("Inception 2");
+			repository.update(movie);
+		});
 	}
 
 	@Test
@@ -72,7 +83,7 @@ public class MovieRepositoryTest {
 		Movie movie = repository.getReference(-2L);
 		assertThat(movie.getId()).as("la référence n'a pas été correctement chargée").isEqualTo(-2L);
 	}
-	
+
 	@Test
 	public void getReference_fail() {
 		assertThrows(LazyInitializationException.class, () -> {
@@ -81,4 +92,5 @@ public class MovieRepositoryTest {
 			assertThat(movie.getId()).as("la référence n'a pas été correctement chargée").isEqualTo(-2L);
 		});
 	}
+
 }
