@@ -64,4 +64,10 @@ public class MovieRepository {
 	public Movie getReference(Long l) {
 		return entityManager.getReference(Movie.class, l);
 	}
+
+	public List<Movie> findByName(String searchString) {
+		return entityManager.createQuery("select m from Movie m where m.name = :param", Movie.class)
+				.setParameter("param", searchString)
+				.getResultList();
+	}
 }

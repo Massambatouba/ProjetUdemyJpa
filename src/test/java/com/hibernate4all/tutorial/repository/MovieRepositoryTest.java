@@ -178,5 +178,12 @@ public class MovieRepositoryTest {
 			assertThat(movie.getId()).as("la référence n'a pas été correctement chargée").isEqualTo(-2L);
 		});
 	}
+	
+	@Test
+	public void findByName() {
+		List<Movie> result = repository.findByName("Inception");
+		assertThat(result).as("il ne devrait y avoir qu'un film correspondant au critère").hasSize(1);
+		assertThat(result.get(0).getName()).as("mauvais film récupéré").isEqualTo("Inception");
+	}
 
 }
