@@ -15,6 +15,7 @@
 <!-- 	<logger name="org.springframework.orm.jpa.JpaTransactionManager" level="DEBUG" /> -->
 <!-- 	<logger name="org.hibernate.internal.SessionImpl" level="TRACE" /> -->
 
+	<logger name="com.hibernate4all.tutorial" level="INFO" />
 
 	<root level="WARN">
 		<appender-ref ref="STDOUT" />

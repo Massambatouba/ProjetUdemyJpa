@@ -44,6 +44,14 @@ public class MovieRepository {
 		return entityManager.createQuery("from Movie", Movie.class).getResultList();
 	}
 
+	public List<Movie> getMovies(int start, int maxResult) {
+		return entityManager
+				.createQuery("select m from Movie m order by m.name", Movie.class)
+				.setFirstResult(start)
+				.setMaxResults(maxResult)
+				.getResultList();
+	}
+	
 	@Transactional
 	public Movie merge(Movie movie) {
 		return entityManager.merge(movie);

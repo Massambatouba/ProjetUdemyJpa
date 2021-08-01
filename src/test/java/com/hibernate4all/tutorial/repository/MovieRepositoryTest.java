@@ -3,6 +3,8 @@ package com.hibernate4all.tutorial.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -206,5 +208,15 @@ public class MovieRepositoryTest {
 	public void getAllMovieDetails_casNominal() {
 		List<MovieDetails> movieDetails = repository.getAllMovieDetails();
 		assertThat(movieDetails).as("la liste des movie details n'a pas été correctement récupérée").hasSize(3);
+	}
+	
+	@Test
+	@Sql({ "/datas/datas-test-bulk.sql" })
+	public void getAllMovieBulk_casNominal() {
+		Instant now = Instant.now();
+		List<Movie> movies = repository.getMovies(100, 50);
+		Duration duration = Duration.between(now, Instant.now());
+		LOGGER.info("durée : {}", duration.toMillis());
+		assertThat(movies).hasSize(50);
 	}
 }
