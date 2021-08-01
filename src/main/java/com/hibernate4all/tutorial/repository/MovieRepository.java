@@ -21,8 +21,12 @@ public class MovieRepository {
 		entityManager.persist(movie);
 	}
 
+	public Movie find(Long id) {
+		return entityManager.find(Movie.class, id);
+	}
+
 	public List<Movie> getAll() {
-		throw new UnsupportedOperationException();
+		return entityManager.createQuery("from Movie", Movie.class).getResultList();
 	}
 
 }
