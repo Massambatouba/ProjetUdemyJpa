@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.Version;
 
 @Entity
 public class Movie {
@@ -27,6 +28,9 @@ public class Movie {
 
 	@Column(nullable = false)
 	private String name;
+
+	@Version
+	private short version;
 
 	private String description;
 
