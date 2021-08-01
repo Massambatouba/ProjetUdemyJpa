@@ -21,6 +21,7 @@ import com.hibernate4all.tutorial.config.PersistenceConfigTest;
 import com.hibernate4all.tutorial.domain.Certification;
 import com.hibernate4all.tutorial.domain.Genre;
 import com.hibernate4all.tutorial.domain.Movie;
+import com.hibernate4all.tutorial.domain.MovieDetails;
 import com.hibernate4all.tutorial.domain.Review;
 
 @ExtendWith(SpringExtension.class)
@@ -41,6 +42,13 @@ public class MovieRepositoryTest {
 				.setCertification(Certification.INTERDIT_MOINS_12);
 		repository.persist(movie);
 		assertThat(movie.getId()).as("le movie aurait du être persisté").isNotNull();
+	}
+	
+	@Test
+	public void addMovieDetails_casNominal() {
+		MovieDetails details = new MovieDetails().setPlot("Intrigue du film Memento trés longue !");
+		repository.addMovieDetails(details, -2L);
+		assertThat(details.getId()).as("l'entité MovieDetails aurait du être persistée").isNotNull();
 	}
 
 	@Test

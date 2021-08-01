@@ -9,6 +9,7 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import com.hibernate4all.tutorial.domain.Movie;
+import com.hibernate4all.tutorial.domain.MovieDetails;
 
 @Repository
 public class MovieRepository {
@@ -19,6 +20,13 @@ public class MovieRepository {
 	@Transactional
 	public void persist(Movie movie) {
 		entityManager.persist(movie);
+	}
+
+	@Transactional
+	public void addMovieDetails(MovieDetails movieDetails, Long idMovie) {
+		Movie movieRef = getReference(idMovie);
+		movieDetails.setMovie(movieRef);
+		entityManager.persist(movieDetails);
 	}
 
 	public Movie find(Long id) {

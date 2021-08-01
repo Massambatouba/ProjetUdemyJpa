@@ -1,5 +1,6 @@
 SET REFERENTIAL_INTEGRITY FALSE;
 truncate table Movie_Genre;
+truncate table Movie_Details;
 truncate table Movie;
 truncate table Review;
 truncate table Genre;
