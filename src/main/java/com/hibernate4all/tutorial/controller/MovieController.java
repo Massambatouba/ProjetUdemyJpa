@@ -2,12 +2,16 @@ package com.hibernate4all.tutorial.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,19 +34,19 @@ public class MovieController {
 
 	@Autowired
 	private MovieRepository repository;
-	
+
 	@Autowired
 	private MovieDetailsRepository movieDetailsRepository;
 
 	@PostMapping("/")
 	public Movie create(@RequestBody Movie movie) {
-		repository.persist(movie);
+		repository.save(movie);
 		return movie;
 	}
-	
+
 	@GetMapping("/")
 	public ResponseEntity<List<MovieDTO>> get() {
-		List<Movie> movie = repository.getAll();
+		List<Movie> movie = repository.findAll();
 		List<MovieDTO> moviesDTO = new ArrayList<MovieDTO>();
 		toMoviesDTO(movie, moviesDTO);
 
@@ -51,7 +55,7 @@ public class MovieController {
 
 	@GetMapping("/search")
 	public ResponseEntity<List<MovieDTO>> get(@ModelAttribute("text") String text) {
-		List<Movie> movie = repository.search(text);
+		List<Movie> movie = repository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(text, text);
 		List<MovieDTO> moviesDTO = new ArrayList<MovieDTO>();
 		toMoviesDTO(movie, moviesDTO);
 
@@ -59,14 +63,11 @@ public class MovieController {
 	}
 
 	private void toMoviesDTO(List<Movie> movie, List<MovieDTO> moviesDTO) {
-		movie
-				.forEach(m -> moviesDTO
-						.add(new MovieDTO()
-								.setCertification(m.getCertification())
-								.setDescription(m.getDescription())
-								.setId(m.getId())
-								.setImage(m.getImage())
-								.setName(m.getName())));
+		movie.forEach(m -> moviesDTO.add(new MovieDTO().setCertification(m.getCertification())
+				.setDescription(m.getDescription())
+				.setId(m.getId())
+				.setImage(m.getImage())
+				.setName(m.getName())));
 	}
 
 	@GetMapping("/{id}")
@@ -89,17 +90,25 @@ public class MovieController {
 	public ResponseEntity<Movie> update(@RequestBody Movie movie) {
 		try {
 			// nb: ceci est une façon de faire différente de ce que j'ai fait dans la vidéo
-			Movie result = repository.update(movie);
+			Movie result = repository.save(movie);
 			return ResponseEntity.ok(result);
 		} catch (EntityNotFoundException exc) {
 			return ResponseEntity.notFound().build();
+		} catch (ObjectOptimisticLockingFailureException exc) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
 		}
 	}
 
 	@DeleteMapping("/{id}")
+	@Transactional
 	public ResponseEntity<Movie> delete(@PathVariable("id") Long id) {
-		boolean removed = repository.remove(id);
-		return removed ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+		Optional<Movie> movie = repository.findById(id);
+		if (movie.isPresent()) {
+			repository.deleteById(id);
+			return ResponseEntity.ok().build();
+		} else {
+			return ResponseEntity.notFound().build();
+		}
 	}
 
 }

@@ -8,7 +8,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.EntityManagerFactory;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -21,6 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -29,7 +30,6 @@ import com.hibernate4all.tutorial.domain.Award;
 import com.hibernate4all.tutorial.domain.Certification;
 import com.hibernate4all.tutorial.domain.Genre;
 import com.hibernate4all.tutorial.domain.Movie;
-import com.hibernate4all.tutorial.domain.MovieDetails;
 import com.hibernate4all.tutorial.domain.Review;
 
 @ExtendWith(SpringExtension.class)
@@ -57,7 +57,7 @@ public class MovieRepositoryTest {
 		Movie movie = new Movie().setName("Inception")
 				.setCertification(Certification.INTERDIT_MOINS_12)
 				.addAward(award);
-		repository.persist(movie);
+		repository.save(movie);
 		assertThat(award.getId()).as("Award aurait du être persisté avec Movie").isNotNull();
 	}
 	
@@ -66,7 +66,7 @@ public class MovieRepositoryTest {
 		Movie movie = new Movie().setName("Inception")
 				.setDescription("test")
 				.setCertification(Certification.INTERDIT_MOINS_12);
-		repository.persist(movie);
+		repository.save(movie);
 		assertThat(movie.getId()).as("le movie aurait du être persisté").isNotNull();
 	}
 
@@ -77,7 +77,7 @@ public class MovieRepositoryTest {
 		Genre bio = new Genre("Biography");
 		Genre drama = new Genre("Drama");
 		movie.addGenre(bio).addGenre(drama);
-		repository.persist(movie);
+		repository.save(movie);
 		assertThat(bio.getId()).as("l'entité aurait du être persistée avec le Movie").isNotNull();
 	}
 
@@ -85,12 +85,13 @@ public class MovieRepositoryTest {
 	public void merge_withExistingGenre() {
 		Movie movie = new Movie();
 		movie.setName("The Social Network");
+		repository.save(movie);
 		Genre bio = new Genre("Biography");
 		Genre drama = new Genre("Drama");
 		Genre action = new Genre("Action");
 		action.setId(-1L);
 		movie.addGenre(bio).addGenre(drama).addGenre(action);
-		Movie m =repository.merge(movie);
+		Movie m =repository.save(movie);
 		assertThat(m.getGenres()).as("l'entité persistée devrait avoir 3 genres").hasSize(3);
 		assertThat(m.getGenres()).as("tous les genres associés à l'entité devrait avoir un id").allMatch(g -> g.getId() != null);
 	}
@@ -104,14 +105,14 @@ public class MovieRepositoryTest {
 		Review review2 = new Review().setAuthor("jp").setContent("au top!");
 		movie.addReview(review1);
 		movie.addReview(review2);
-		repository.persist(movie);
+		repository.save(movie);
 		assertThat(review1.getId()).as("les reviews aurait du être persistées par cascade").isNotNull();
 	}
 
 	@Test
 	public void associationGet_casNominal() {
 		assertThrows(LazyInitializationException.class, () -> {
-			Movie movie = repository.find(-1L);
+			Movie movie = repository.findById(-1L).get();
 			LOGGER.trace("nombre de reviews : " + movie.getReviews().size());
 		});
 	}
@@ -131,13 +132,13 @@ public class MovieRepositoryTest {
 		Movie movie = new Movie();
 		movie.setName("Inception 2");
 		movie.setId(-1L);
-		Movie mergedMovie = repository.merge(movie);
+		Movie mergedMovie = repository.save(movie);
 		assertThat(mergedMovie.getName()).as("le nom du film n'a pas été mis à jour").isEqualTo("Inception 2");
 	}
 
 	@Test
 	public void find_casNominal() {
-		Movie memento = repository.find(-2L);
+		Movie memento = repository.findById(-2L).get();
 		assertThat(memento.getName()).as("mauvais film récupéré").isEqualTo("Memento");
 		assertThat(memento.getCertification()).as("le converter n'a pas fonctionné")
 				.isEqualTo(Certification.INTERDIT_MOINS_12);
@@ -145,28 +146,28 @@ public class MovieRepositoryTest {
 
 	@Test
 	public void getAll_casNominal() {
-		List<Movie> movies = repository.getAll();
+		List<Movie> movies = repository.findAll();
 		assertThat(movies).as("l'ensemble des films n'a pas été récupéré").hasSize(2);
 	}
 
 	@Test
 	public void remove_casNominal() {
-		repository.remove(-2L);
+		repository.deleteById(-2L);
 
-		List<Movie> movies = repository.getAll();
+		List<Movie> movies = repository.findAll();
 		assertThat(movies).as("le film n'a pas été supprimé").hasSize(1);
 	}
 
 	@Test
 	public void getReference_casNominal() {
-		Movie movie = repository.getReference(-2L);
+		Movie movie = repository.getOne(-2L);
 		assertThat(movie.getId()).as("la référence n'a pas été correctement chargée").isEqualTo(-2L);
 	}
 
 	@Test
 	public void getReference_fail() {
 		assertThrows(LazyInitializationException.class, () -> {
-			Movie movie = repository.getReference(-2L);
+			Movie movie = repository.getOne(-2L);
 			LOGGER.trace("movie name : " + movie.getName());
 			assertThat(movie.getId()).as("la référence n'a pas été correctement chargée").isEqualTo(-2L);
 		});
@@ -179,6 +180,13 @@ public class MovieRepositoryTest {
 		assertThat(result.get(0).getName()).as("mauvais film récupéré").isEqualTo("Inception");
 	}
 
+	@Test
+	public void findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase_casNominal() {
+		List<Movie> result = repository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase("cept", "cept");
+		assertThat(result).hasSize(1);
+		assertThat(result.get(0).getName()).isEqualTo("Inception");
+	}
+	
 	@Test
 	public void findWithCertificatqueryion_casNominal() {
 		List<Movie> result = repository.findWithCertification("<=", Certification.INTERDIT_MOINS_12);
@@ -198,7 +206,7 @@ public class MovieRepositoryTest {
 	@Sql({ "/datas/datas-test-bulk.sql" })
 	public void getAllMovieBulk_casNominal() {
 		Instant now = Instant.now();
-		List<Movie> movies = repository.getMovies(100, 50);
+		List<Movie> movies = repository.findAll(PageRequest.of(2, 50, Sort.by("name"))).getContent();
 		Duration duration = Duration.between(now, Instant.now());
 		LOGGER.info("durée : {}", duration.toMillis());
 		assertThat(movies).hasSize(50);

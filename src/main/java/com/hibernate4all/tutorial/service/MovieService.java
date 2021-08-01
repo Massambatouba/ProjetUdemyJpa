@@ -16,7 +16,7 @@ public class MovieService {
 
 	@Transactional
 	public void updateDescription(Long id, String description) {
-		Movie movie = repository.find(id);
+		Movie movie = repository.findById(id).get();
 		movie.setDescription(description);
 	}
 }

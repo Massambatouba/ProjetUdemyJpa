@@ -25,7 +25,7 @@ public class MovieDetailsRepositoryExtendedImpl implements MovieDetailsRepositor
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public MovieDetails getMovieDetails(Long id) {
 		MovieDetails result = entityManager
 				.createQuery("select distinct md from MovieDetails md " + "join fetch md.movie m "

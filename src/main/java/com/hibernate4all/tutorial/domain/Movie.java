@@ -19,7 +19,11 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Version;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Movie {
 
 	@Id
@@ -30,6 +34,7 @@ public class Movie {
 	private String name;
 
 	@Version
+	@JsonProperty
 	private short version;
 
 	private String description;
@@ -50,6 +55,11 @@ public class Movie {
 	@JoinTable(name = "movie_genre", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "genre_id"))
 	private Set<Genre> genres = new HashSet<>();
 
+	// utile pour jackson
+	public short getVersion() {
+		return version;
+	}
+	
 	public Movie addGenre(Genre genre) {
 		if (genre != null) {
 			this.genres.add(genre);
