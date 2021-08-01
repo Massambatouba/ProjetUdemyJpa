@@ -107,7 +107,7 @@
 				initLayout : true,
 			});
 			$.ajax({
-				url : "mock/",
+				url : "movie/",
 				type : "GET",
 				success : function(result) {
 					displayMoviesResult(result);
@@ -122,7 +122,7 @@
 		$("#searchForm").submit(function(e) {
 			e.preventDefault();
 			$.ajax({
-				url : "mock/search",
+				url : "movie/search",
 				data: { text: $('#search').val()},
 				type : "GET",
 				success : function(result) {

@@ -12,10 +12,13 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Review {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@JsonIgnore
 	private Long id;
 
 	private String author;
@@ -28,6 +31,7 @@ public class Review {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "movie_id")
+	@JsonIgnore
 	private Movie movie;
 
 	public Movie getMovie() {

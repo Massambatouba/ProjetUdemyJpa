@@ -40,8 +40,37 @@ public class MovieRepository {
 		return entityManager.find(Movie.class, id);
 	}
 
+	@Transactional
+	public MovieDetails getMovieDetails(Long id) {
+		MovieDetails result = entityManager
+				.createQuery("select distinct md from MovieDetails md " + "join fetch md.movie m "
+						+ "left join fetch m.reviews "
+						+ "left join fetch m.genres "
+						+ " where md.id = :id", MovieDetails.class)
+				.setParameter("id", id)
+				.setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
+				.getSingleResult();
+
+		entityManager
+				.createQuery("select distinct m from Movie m left join fetch m.awards where m in (:movies)",
+						Movie.class)
+				.setParameter("movies", result.getMovie())
+				.setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
+				.getResultList();
+
+		return result;
+	}
+	
 	public List<Movie> getAll() {
 		return entityManager.createQuery("from Movie", Movie.class).getResultList();
+	}
+	
+	public List<Movie> search(String text) {
+		return entityManager
+				.createQuery("select m from Movie m " + "where upper(m.name) like '%' || :text || '%' "
+						+ "or upper(m.description) like '%' || :text || '%' ", Movie.class)
+				.setParameter("text", text.toUpperCase())
+				.getResultList();
 	}
 
 	public List<Movie> getMovies(int start, int maxResult) {

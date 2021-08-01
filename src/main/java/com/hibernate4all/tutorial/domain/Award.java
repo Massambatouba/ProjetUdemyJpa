@@ -9,11 +9,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Award {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@JsonIgnore
 	private Long id;
 
 	private String name;
@@ -21,6 +24,7 @@ public class Award {
 	private int year;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
 	private Movie movie;
 
 	public Long getId() {

@@ -32,6 +32,10 @@ public class Movie {
 
 	private Certification certification;
 
+	private String image;
+
+	private String director;
+
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "movie")
 	private List<Review> reviews = new ArrayList<>();
 
@@ -121,6 +125,24 @@ public class Movie {
 		return this;
 	}
 
+	public String getImage() {
+		return image;
+	}
+
+	public Movie setImage(String image) {
+		this.image = image;
+		return this;
+	}
+
+	public String getDirector() {
+		return director;
+	}
+
+	public Movie setDirector(String director) {
+		this.director = director;
+		return this;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(31);
@@ -157,15 +179,26 @@ public class Movie {
 		Movie other = (Movie) obj;
 		if (id == null && other.getId() == null) {
 			return Objects.equals(name, other.getName()) && Objects.equals(description, other.getDescription())
-					&& Objects.equals(certification, other.getCertification());
+					&& Objects.equals(certification, other.getCertification())
+					&& Objects.equals(director, other.getDirector()) && Objects.equals(image, other.getImage());
 		}
 		return id != null && Objects.equals(id, other.getId());
 	}
 
 	@Override
 	public String toString() {
-		return "Movie [id=" + id + ", name=" + name + ", description=" + description + ", certification="
-				+ certification + "]";
+		return "Movie [id=" + id
+				+ ", name="
+				+ name
+				+ ", description="
+				+ description
+				+ ", certification="
+				+ certification
+				+ ", image="
+				+ image
+				+ ", director="
+				+ director
+				+ "]";
 	}
 
 }

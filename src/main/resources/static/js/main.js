@@ -43,7 +43,7 @@ function displayMoviesResult(result) {
 	$(".info").click(function() {
 		var movieId = $(this).attr('movie-id');
 		$.ajax({
-			url: "mock/"+movieId,
+			url: "movie/"+movieId,
 			type: "GET",
 			success: function(result) {
 				displayMovieDetailsResult(result);
