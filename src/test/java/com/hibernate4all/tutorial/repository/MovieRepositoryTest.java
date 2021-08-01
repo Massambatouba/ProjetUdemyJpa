@@ -20,6 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.hibernate4all.tutorial.config.PersistenceConfigTest;
 import com.hibernate4all.tutorial.domain.Certification;
 import com.hibernate4all.tutorial.domain.Movie;
+import com.hibernate4all.tutorial.domain.Review;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { PersistenceConfigTest.class })
@@ -39,6 +40,19 @@ public class MovieRepositoryTest {
 				.setCertification(Certification.INTERDIT_MOINS_12);
 		repository.persist(movie);
 		assertThat(movie.getId()).as("le movie aurait du être persisté").isNotNull();
+	}
+
+	@Test
+	public void associationSave_casNominal() {
+		Movie movie = new Movie().setName("Fight Club")
+				.setCertification(Certification.INTERDIT_MOINS_12)
+				.setDescription("Le fight club n'existe pas");
+		Review review1 = new Review().setAuthor("max").setContent("super film !");
+		Review review2 = new Review().setAuthor("jp").setContent("au top!");
+		movie.addReview(review1);
+		movie.addReview(review2);
+		repository.persist(movie);
+		assertThat(review1.getId()).as("les reviews aurait du être persistées par cascade").isNotNull();
 	}
 
 	@Test

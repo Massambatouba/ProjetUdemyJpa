@@ -1,12 +1,17 @@
 package com.hibernate4all.tutorial.domain;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Movie {
@@ -21,6 +26,33 @@ public class Movie {
 	private String description;
 
 	private Certification certification;
+
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "movie")
+	private List<Review> reviews = new ArrayList<Review>();
+
+	public Movie addReview(Review review) {
+		if (review != null) {
+			this.reviews.add(review);
+			review.setMovie(this);
+		}
+		return this;
+	}
+
+	public Movie removieReview(Review review) {
+		if (review != null) {
+			this.reviews.remove(review);
+			review.setMovie(null);
+		}
+		return this;
+	}
+
+	public List<Review> getReviews() {
+		return Collections.unmodifiableList(reviews);
+	}
+
+	public void setReviews(List<Review> reviews) {
+		this.reviews = reviews;
+	}
 
 	public Certification getCertification() {
 		return certification;
